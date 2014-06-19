@@ -1,0 +1,54 @@
+#! /usr/bin/python 
+# -*- encoding: ASCII -*-
+
+# Author - Ashish Jain
+
+# Max share price, year, month
+
+# Script reads STDIN for data 
+
+# Output 
+##<company>:<year>:<march>:<price>
+##company A:1991:march:246
+##company B:1990:jan:245
+##company C:1990:jan:243
+##company D:1991:december:247
+##company E:1991:june:245
+
+
+import csv       #csv module for reading csv file
+from collections import OrderedDict, namedtuple
+
+
+def get_name_max_shares_price(input_file):
+    """ Use the tuple DS to get maximum share value and the corresponding time """
+    with open(input_file) as f:
+        reader = csv.reader(f)
+        tup = namedtuple('tup', ['price', 'year', 'month'])
+        output = OrderedDict()
+        names = next(reader)[2:]
+        for name in names:
+            #initialize the dict
+            output[name] = tup(0, 'year', 'month')
+        for row in reader:
+            year, month = row[:2]         # Use year, month, *prices = row 
+            for name, price in zip(names, map(int, row[2:])): # map(int, prices) 
+                if output[name].price < price:
+                    output[name] = tup(price, year, month)
+    return output
+
+def result_pattern(d):
+    """ Result pattern"""
+    print "<company>:<year>:<march>:<price>"
+    for d1,d2 in d.items():
+        print str(d1)+":"+str(d2[1])+":"+str(d2[2])+":"+str(d2[0])
+ 
+def main():  # Can take a input_csv  file importing modules
+    try:
+        flat_tuples = get_name_max_shares_price('input.csv')
+        return result_pattern(flat_tuples)
+    except: 
+        return "[Critical]: Something wrong in CSV format. Plese verify."
+    
+if __name__ == "__main__":
+    main()           # Drive the startup
